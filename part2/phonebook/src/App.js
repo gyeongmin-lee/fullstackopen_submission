@@ -47,13 +47,22 @@ const App = () => {
     } else {
       const newPerson = { name: newName, number: newNumber };
 
-      personService.create(newPerson).then((newPerson) => {
-        setPersons(persons.concat(newPerson));
-        setSuccessMsg(`Added ${newPerson.name}`);
-        setTimeout(() => {
-          setSuccessMsg(null);
-        }, 5000);
-      });
+      personService
+        .create(newPerson)
+        .then((newPerson) => {
+          setPersons(persons.concat(newPerson));
+          setSuccessMsg(`Added ${newPerson.name}`);
+          setTimeout(() => {
+            setSuccessMsg(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          console.error(error);
+          setErrorMsg(error.response.data.error);
+          setTimeout(() => {
+            setErrorMsg(null);
+          }, 5000);
+        });
     }
   };
 
