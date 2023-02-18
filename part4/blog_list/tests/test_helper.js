@@ -47,6 +47,8 @@ const nonExistingId = async () => {
   });
   await blog.save();
   await blog.remove();
+
+  return blog._id.toString();
 };
 
 const blogsInDb = async () => {
