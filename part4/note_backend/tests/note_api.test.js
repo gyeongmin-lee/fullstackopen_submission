@@ -22,15 +22,14 @@ test("notes are returned as json", async () => {
 }, 100000);
 
 test("there are two notes", async () => {
-  const response = await api.get("/api/notes");
-
-  expect(response.body).toHaveLength(helper.initialNotes.length);
+  const notes = await helper.notesInDb();
+  expect(notes).toHaveLength(helper.initialNotes.length);
 });
 
 test("the first note is about HTTP methods", async () => {
-  const response = await api.get("/api/notes");
+  const notes = await helper.notesInDb();
 
-  const contents = response.body.map((r) => r.content);
+  const contents = notes.map((r) => r.content);
   expect(contents).toContain("Browser can execute only JavaScript");
 });
 
@@ -60,9 +59,8 @@ test("note without content is not added", async () => {
 
   await api.post("/api/notes").send(newNote).expect(400);
 
-  const response = await api.get("/api/notes");
-
-  expect(response.body).toHaveLength(helper.initialNotes.length);
+  const notesAtEnd = await helper.notesInDb();
+  expect(notesAtEnd).toHaveLength(helper.initialNotes.length);
 });
 
 test("a specific note can be viewed", async () => {
