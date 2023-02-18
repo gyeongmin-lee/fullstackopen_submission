@@ -1,6 +1,7 @@
 const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
+const mongoose = require("mongoose");
 const { initialBlogPosts, blogsInDb, nonExistingId } = require("./test_helper");
 
 const api = supertest(app);
@@ -183,4 +184,8 @@ describe("updating a blog", () => {
     const blogsAtEnd = await blogsInDb();
     expect(blogsAtEnd).toHaveLength(initialBlogPosts.length);
   });
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });
