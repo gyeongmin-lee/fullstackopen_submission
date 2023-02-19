@@ -2,6 +2,7 @@ POST http://localhost:3001/api/notes
 Content-Type: application/json
 
 {
-  "content": "Ensure that everything still works",
-  "important": true
+  "content": "Note with user",
+  "important": true,
+  "userId": "63f1d009c1644ae2c7d753af"
 }
