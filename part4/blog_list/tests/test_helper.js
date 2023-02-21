@@ -68,12 +68,14 @@ const getLoggedInUser = async (
   username = "testuser",
   password = "sekret"
 ) => {
-  await User.deleteMany({});
+  let savedUser = await User.findOne({ username });
 
-  const passwordHash = await bcrypt.hash(password, 10);
-  const user = new User({ username, passwordHash });
+  if (!savedUser) {
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = new User({ username, passwordHash });
 
-  const savedUser = await user.save();
+    savedUser = await user.save();
+  }
 
   const loggedInUser = await api
     .post("/api/login")

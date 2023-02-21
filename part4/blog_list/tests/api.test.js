@@ -114,20 +114,79 @@ describe("addition of a new blog", () => {
     const blogsAtEnd = await blogsInDb();
     expect(blogsAtEnd).toHaveLength(initialBlogPosts.length);
   });
+
+  test("a blog without token is not added", async () => {
+    const blogsAtStart = await blogsInDb();
+
+    const newBlog = {
+      title: "New blog",
+      author: "New author",
+      url: "http://newblog.com",
+    };
+
+    await api.post("/api/blogs").send(newBlog).expect(401);
+
+    const blogsAtEnd = await blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
+  });
 });
 
 describe("deletion of a blog", () => {
+  beforeEach(async () => {
+    const { token } = await getLoggedInUser(api, "username", "password");
+    const newBlog = {
+      title: "Blog to delete",
+      author: "Author to delete",
+      url: "http://blogtodelete.com",
+    };
+
+    await api
+      .post("/api/blogs")
+      .set({ Authorization: `Bearer ${token}` })
+      .send(newBlog);
+  });
+
   test("succeeds with status code 204 if id is valid", async () => {
     const blogsAtStart = await blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+    const blogToDelete = blogsAtStart.find(
+      (blog) => blog.title === "Blog to delete"
+    );
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const { token, user: initialUser } = await getLoggedInUser(
+      api,
+      "username",
+      "password"
+    );
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set({ Authorization: `Bearer ${token}` })
+      .expect(204);
 
     const blogsAtEnd = await blogsInDb();
-    expect(blogsAtEnd).toHaveLength(initialBlogPosts.length - 1);
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1);
 
     const titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).not.toContain(blogToDelete.title);
+
+    const { user: updatedUser } = await getLoggedInUser(
+      api,
+      "username",
+      "password"
+    );
+    expect(updatedUser.blogs.length).toBe(initialUser.blogs.length - 1);
+  });
+
+  test("fails with status code 401 if id is valid but token is not provided", async () => {
+    const blogsAtStart = await blogsInDb();
+    const blogToDelete = blogsAtStart.find(
+      (blog) => blog.title === "Blog to delete"
+    );
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(401);
+
+    const blogsAtEnd = await blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
   });
 });
 
