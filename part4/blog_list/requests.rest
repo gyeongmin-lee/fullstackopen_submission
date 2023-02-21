@@ -6,7 +6,8 @@ Content-Type: application/json
   "title": "After refactoring",
   "author": "John Doe",
   "url": "google.com",
-  "likes": 2
+  "likes": 2,
+  "userId": "63f4812dc6a68916f390bc22"
 }
 
 ### Get all blogs

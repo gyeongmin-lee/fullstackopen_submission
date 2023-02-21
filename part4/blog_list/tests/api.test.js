@@ -44,11 +44,24 @@ describe("when there is initially some blogs saved", () => {
 });
 
 describe("addition of a new blog", () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash("sekret", 10);
+    const user = new User({ username: "testuser", passwordHash });
+
+    await user.save();
+  });
+
   test("a valid blog can be added", async () => {
+    const usersAtStart = await usersInDb();
+    const user = usersAtStart[0];
+
     const newBlog = {
       title: "New blog",
       author: "New author",
       url: "http://newblog.com",
+      userId: user.id,
     };
 
     await api
@@ -62,13 +75,24 @@ describe("addition of a new blog", () => {
 
     const titles = blogsAtEnd.map((blog) => blog.title);
     expect(titles).toContain("New blog");
+
+    const addedBlog = blogsAtEnd.find((blog) => blog.title === "New blog");
+    expect(addedBlog.user.toString()).toBe(user.id.toString());
+
+    const usersAtEnd = await usersInDb();
+    const updatedUser = usersAtEnd.find((u) => u.id.toString() === user.id);
+    expect(updatedUser.blogs.length).toBe(user.blogs.length + 1);
   });
 
   test("a blog without likes property defaults to 0", async () => {
+    const usersAtStart = await usersInDb();
+    const user = usersAtStart[0];
+
     const newBlog = {
       title: "New blog",
       author: "New author",
       url: "http://newblog.com",
+      userId: user.id,
     };
 
     await api.post("/api/blogs").send(newBlog);
@@ -76,6 +100,7 @@ describe("addition of a new blog", () => {
     const blogsAtEnd = await blogsInDb();
     const addedBlog = blogsAtEnd.find((blog) => blog.title === "New blog");
 
+    console.log("addedBlog", addedBlog);
     expect(addedBlog.likes).toBe(0);
   });
 
