@@ -10,6 +10,7 @@ const Note = require("../models/note");
 
 describe("when there is initially some notes saved", () => {
   beforeEach(async () => {
+    await User.deleteMany({});
     await Note.deleteMany({});
     await Note.insertMany(helper.initialNotes);
   });
@@ -63,6 +64,8 @@ describe("when there is initially some notes saved", () => {
 
   describe("addition of a new note", () => {
     test("succeeds with valid data", async () => {
+      const token = await helper.getLoggedInToken(api);
+
       const newNote = {
         content: "async/await simplifies making async calls",
         important: true,
@@ -71,6 +74,7 @@ describe("when there is initially some notes saved", () => {
       await api
         .post("/api/notes")
         .send(newNote)
+        .set({ Authorization: `Bearer ${token}` })
         .expect(201)
         .expect("Content-Type", /application\/json/);
 
@@ -82,11 +86,17 @@ describe("when there is initially some notes saved", () => {
     });
 
     test("fails with status code 400 if data invalid", async () => {
+      const token = await helper.getLoggedInToken(api);
+
       const newNote = {
         important: true,
       };
 
-      await api.post("/api/notes").send(newNote).expect(400);
+      await api
+        .post("/api/notes")
+        .send(newNote)
+        .set({ Authorization: `Bearer ${token}` })
+        .expect(400);
 
       const notesAtEnd = await helper.notesInDb();
 

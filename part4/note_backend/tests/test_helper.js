@@ -30,9 +30,33 @@ const usersInDb = async () => {
   return users.map((u) => u.toJSON());
 };
 
+const getLoggedInToken = async (api) => {
+  const newUser = {
+    username: "mluukkai",
+    name: "Matti Luukkainen",
+    password: "salainen",
+  };
+
+  await api
+    .post("/api/users")
+    .send(newUser)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const loggedInUser = await api
+    .post("/api/login")
+    .send(newUser)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  const token = loggedInUser.body.token;
+  return token;
+};
+
 module.exports = {
   initialNotes,
   nonExistingId,
   notesInDb,
   usersInDb,
+  getLoggedInToken,
 };
