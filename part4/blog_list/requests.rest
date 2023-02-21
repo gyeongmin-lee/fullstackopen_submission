@@ -1,13 +1,13 @@
 ### Add new blog
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdtaW5sZWUiLCJpZCI6IjYzZjQ4MTJkYzZhNjg5MTZmMzkwYmMyMiIsImlhdCI6MTY3Njk3MTgxMSwiZXhwIjoxNjc2OTc1NDExfQ.zore_D14monZp2hr9fdxFRAudQG79PeytfUTdB1oTf0
 
 {
-  "title": "After refactoring",
+  "title": "With authentication",
   "author": "John Doe",
   "url": "google.com",
-  "likes": 2,
-  "userId": "63f4812dc6a68916f390bc22"
+  "likes": 2
 }
 
 ### Get all blogs
