@@ -177,6 +177,25 @@ describe("deletion of a blog", () => {
     expect(updatedUser.blogs.length).toBe(initialUser.blogs.length - 1);
   });
 
+  test("fails with status code 400 if id is invalid", async () => {
+    const blogsAtStart = await blogsInDb();
+    const blogToDelete = blogsAtStart.find(
+      (blog) => blog.title === "Blog to delete"
+    );
+
+    const { token } = await getLoggedInUser(api, "username", "password");
+
+    const invalidBlogId = `${blogToDelete.id}1`;
+
+    await api
+      .delete(`/api/blogs/${invalidBlogId}`)
+      .set({ Authorization: `Bearer ${token}` })
+      .expect(400);
+
+    const blogsAtEnd = await blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
+  });
+
   test("fails with status code 401 if id is valid but token is not provided", async () => {
     const blogsAtStart = await blogsInDb();
     const blogToDelete = blogsAtStart.find(
@@ -184,6 +203,23 @@ describe("deletion of a blog", () => {
     );
 
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(401);
+
+    const blogsAtEnd = await blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
+  });
+
+  test("fails if different user tries to delete a blog", async () => {
+    const blogsAtStart = await blogsInDb();
+    const blogToDelete = blogsAtStart.find(
+      (blog) => blog.title === "Blog to delete"
+    );
+
+    const { token } = await getLoggedInUser(api, "username2", "password2");
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set({ Authorization: `Bearer ${token}` })
+      .expect(401);
 
     const blogsAtEnd = await blogsInDb();
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
