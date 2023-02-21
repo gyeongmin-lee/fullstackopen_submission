@@ -1,8 +1,15 @@
 const supertest = require("supertest");
 const app = require("../app");
 const Blog = require("../models/blog");
+const User = require("../models/user");
 const mongoose = require("mongoose");
-const { initialBlogPosts, blogsInDb, nonExistingId } = require("./test_helper");
+const bcrypt = require("bcrypt");
+const {
+  initialBlogPosts,
+  blogsInDb,
+  nonExistingId,
+  usersInDb,
+} = require("./test_helper");
 
 const api = supertest(app);
 
@@ -183,6 +190,95 @@ describe("updating a blog", () => {
 
     const blogsAtEnd = await blogsInDb();
     expect(blogsAtEnd).toHaveLength(initialBlogPosts.length);
+  });
+});
+
+describe("when there is initially one user at db", () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash("sekret", 10);
+    const user = new User({ username: "root", passwordHash });
+
+    await user.save();
+  });
+
+  test("user can be fetched", async () => {
+    const usersAtStart = await usersInDb();
+    const response = await api.get("/api/users");
+
+    expect(response.body).toHaveLength(usersAtStart.length);
+
+    const users = response.body.map((user) => user.username);
+    expect(users).toContain("root");
+  });
+
+  test("user can be added", async () => {
+    const usersAtStart = await usersInDb();
+
+    const newUser = {
+      username: "testuser",
+      name: "Test User",
+      password: "testuserpassword",
+    };
+
+    await api.post("/api/users").send(newUser).expect(201);
+
+    const usersAtEnd = await usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
+
+    const usernames = usersAtEnd.map((user) => user.username);
+    expect(usernames).toContain("testuser");
+  });
+
+  test("user cannot be added if username is not unique", async () => {
+    const usersAtStart = await usersInDb();
+
+    const newUser = {
+      username: "root",
+      name: "Test User",
+      password: "testuserpassword",
+    };
+
+    const result = await api.post("/api/users").send(newUser).expect(400);
+
+    expect(result.body.error).toContain("`username` to be unique");
+
+    const usersAtEnd = await usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test("both username and password are required", async () => {
+    const usersAtStart = await usersInDb();
+
+    const newUser = {
+      username: "testuser",
+      name: "Test User",
+    };
+
+    const result = await api.post("/api/users").send(newUser).expect(400);
+
+    expect(result.body.error).toContain("missing");
+
+    const usersAtEnd = await usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  test("both username and password should be at least 3 characters long", async () => {
+    const usersAtStart = await usersInDb();
+
+    const newUser = {
+      username: "te",
+      name: "Test User",
+      password: "te",
+    };
+
+    const result = await api.post("/api/users").send(newUser).expect(400);
+
+    expect(result.body.error).toContain("is shorter than the minimum allowed");
+
+    const usersAtEnd = await usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
 });
 
