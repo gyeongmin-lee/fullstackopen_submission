@@ -1,6 +1,5 @@
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
-const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
 blogRouter.get("/", async (request, response) => {
@@ -17,17 +16,16 @@ blogRouter.post("/", async (request, response) => {
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid" });
   }
-  const user = await User.findById(decodedToken.id);
 
   const blog = new Blog({
     ...request.body,
     likes: request.body.likes || 0,
-    user: user.id,
+    user: request.user.id,
   });
 
   const savedBlogs = await blog.save();
-  user.blogs = user.blogs.concat(savedBlogs.id);
-  await user.save();
+  request.user.blogs = request.user.blogs.concat(savedBlogs.id);
+  await request.user.save();
 
   response.status(201).json(savedBlogs);
 });
@@ -43,17 +41,15 @@ blogRouter.delete("/:id", async (request, response) => {
     return response.status(400).end();
   }
 
-  const user = await User.findById(decodedToken.id);
-
-  if (blogToDelete.user.toString() !== user.id.toString()) {
+  if (blogToDelete.user.toString() !== request.user.id.toString()) {
     return response.status(401).json({ error: "not authorized" });
   }
   await blogToDelete.remove();
 
-  user.blogs = user.blogs.filter(
+  request.user.blogs = request.user.blogs.filter(
     (blogId) => blogId.toString() !== request.params.id
   );
-  await user.save();
+  await request.user.save();
 
   response.status(204).end();
 });
