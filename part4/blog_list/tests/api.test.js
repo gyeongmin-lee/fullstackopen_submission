@@ -9,6 +9,8 @@ const {
   blogsInDb,
   nonExistingId,
   usersInDb,
+  getLoggedInToken,
+  getLoggedInUser,
 } = require("./test_helper");
 
 const api = supertest(app);
@@ -44,29 +46,19 @@ describe("when there is initially some blogs saved", () => {
 });
 
 describe("addition of a new blog", () => {
-  beforeEach(async () => {
-    await User.deleteMany({});
-
-    const passwordHash = await bcrypt.hash("sekret", 10);
-    const user = new User({ username: "testuser", passwordHash });
-
-    await user.save();
-  });
-
   test("a valid blog can be added", async () => {
-    const usersAtStart = await usersInDb();
-    const user = usersAtStart[0];
+    const { token, user: loggedInUser } = await getLoggedInUser(api);
 
     const newBlog = {
       title: "New blog",
       author: "New author",
       url: "http://newblog.com",
-      userId: user.id,
     };
 
     await api
       .post("/api/blogs")
       .send(newBlog)
+      .set({ Authorization: `Bearer ${token}` })
       .expect(201)
       .expect("Content-Type", /application\/json/);
 
@@ -77,30 +69,32 @@ describe("addition of a new blog", () => {
     expect(titles).toContain("New blog");
 
     const addedBlog = blogsAtEnd.find((blog) => blog.title === "New blog");
-    expect(addedBlog.user.toString()).toBe(user.id.toString());
+    expect(addedBlog.user.username).toBe(loggedInUser.username);
 
     const usersAtEnd = await usersInDb();
-    const updatedUser = usersAtEnd.find((u) => u.id.toString() === user.id);
-    expect(updatedUser.blogs.length).toBe(user.blogs.length + 1);
+    const updatedUser = usersAtEnd.find(
+      (u) => u.username === loggedInUser.username
+    );
+    expect(updatedUser.blogs.length).toBe(loggedInUser.blogs.length + 1);
   });
 
   test("a blog without likes property defaults to 0", async () => {
-    const usersAtStart = await usersInDb();
-    const user = usersAtStart[0];
+    const { token } = await getLoggedInUser(api);
 
     const newBlog = {
       title: "New blog",
       author: "New author",
       url: "http://newblog.com",
-      userId: user.id,
     };
 
-    await api.post("/api/blogs").send(newBlog);
+    await api
+      .post("/api/blogs")
+      .set({ Authorization: `Bearer ${token}` })
+      .send(newBlog);
 
     const blogsAtEnd = await blogsInDb();
     const addedBlog = blogsAtEnd.find((blog) => blog.title === "New blog");
 
-    console.log("addedBlog", addedBlog);
     expect(addedBlog.likes).toBe(0);
   });
 
