@@ -9,7 +9,6 @@ const {
   blogsInDb,
   nonExistingId,
   usersInDb,
-  getLoggedInToken,
   getLoggedInUser,
 } = require("./test_helper");
 
