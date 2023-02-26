@@ -76,6 +76,41 @@ const App = () => {
     }
   };
 
+  const handleLike = async (blog) => {
+    try {
+      const { id, user, ...blogData } = blog;
+
+      const updatedBlog = await blogService.update(blog.id, {
+        ...blogData,
+        likes: blogData.likes + 1,
+      });
+      setBlogs(
+        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+      );
+
+      const { title } = updatedBlog;
+      setNotificationMessage({ message: `blog ${title} liked` });
+    } catch (exception) {
+      console.error(exception);
+      setNotificationMessage({ message: "Error liking blog", isError: true });
+    }
+  };
+
+  const handleDelete = async (blog) => {
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+        await blogService.remove(blog.id);
+        setBlogs(blogs.filter((b) => b.id !== blog.id));
+
+        const { title } = blog;
+        setNotificationMessage({ message: `blog ${title} deleted` });
+      }
+    } catch (exception) {
+      console.error(exception);
+      setNotificationMessage({ message: "Error deleting blog", isError: true });
+    }
+  };
+
   const setNotificationMessage = ({ message, isError = false }) => {
     if (isError) {
       setError(message);
@@ -89,6 +124,8 @@ const App = () => {
       }, 5000);
     }
   };
+
+  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
 
   if (!user) {
     return (
@@ -134,8 +171,13 @@ const App = () => {
         <BlogForm createBlog={handleNewBlog} />
       </Togglable>
       <h2>posts</h2>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+      {sortedBlogs.map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          onLike={handleLike}
+          onDelete={blog.user?.username === user.username ? handleDelete : null}
+        />
       ))}
     </div>
   );
