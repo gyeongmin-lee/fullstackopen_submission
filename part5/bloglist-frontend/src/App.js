@@ -139,6 +139,7 @@ const App = () => {
             <input
               type="text"
               name="username"
+              id="username"
               value={username}
               onChange={({ target }) => setUsername(target.value)}
               required
@@ -149,12 +150,15 @@ const App = () => {
             <input
               type="password"
               name="password"
+              id="password"
               value={password}
               onChange={({ target }) => setPassword(target.value)}
               required
             />
           </div>
-          <button type="submit">login</button>
+          <button id="login-button" type="submit">
+            login
+          </button>
         </form>
       </div>
     );
