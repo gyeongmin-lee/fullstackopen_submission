@@ -78,6 +78,7 @@ const App = () => {
 
   const handleLike = async (blog) => {
     try {
+      // eslint-disable-next-line no-unused-vars
       const { id, user, ...blogData } = blog;
 
       const updatedBlog = await blogService.update(blog.id, {
