@@ -11,10 +11,12 @@ const AnecdoteList = () => {
 
   const vote = (id) => {
     dispatch(voteAnecdote(id));
-    showNotification(
-      `You voted for "${anecdotes.find((a) => a.id === id).content}"`,
-      5
-    )(dispatch);
+    dispatch(
+      showNotification(
+        `You voted for "${anecdotes.find((a) => a.id === id).content}"`,
+        5
+      )
+    );
   };
 
   const filteredAnecdotes = sortedAnecdotes.filter((anecdote) => {
