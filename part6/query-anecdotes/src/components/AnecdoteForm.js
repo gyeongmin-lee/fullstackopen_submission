@@ -1,13 +1,19 @@
 import { useMutation, useQueryClient } from "react-query";
+import { useNotification } from "../NotificationContext";
 import { createAnecdote } from "../requests";
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient();
+  const { showNotification } = useNotification();
 
   const newAnecdoteMutation = useMutation(createAnecdote, {
     onSuccess: (newNote) => {
       const anecdotes = queryClient.getQueryData("anecdotes");
       queryClient.setQueryData("anecdotes", [...anecdotes, newNote]);
+      showNotification(`you created '${newNote.content}'`);
+    },
+    onError: () => {
+      showNotification("too short anecdote, must have length 5 or more");
     },
   });
 
