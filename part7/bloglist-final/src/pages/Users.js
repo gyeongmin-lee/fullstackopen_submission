@@ -1,6 +1,6 @@
-import { Heading, Table, Thead, Tr, Th, Td } from "@chakra-ui/react";
+import { Heading, Table, Thead, Tr, Th, Td, Link } from "@chakra-ui/react";
 import { useQuery } from "react-query";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import userService from "../services/users";
 
 const UsersPage = () => {
@@ -24,7 +24,9 @@ const UsersPage = () => {
             users.map((user) => (
               <Tr key={user.id}>
                 <Td>
-                  <Link to={`${user.id}`}>{user.name}</Link>
+                  <Link color="blue.500" as={RouterLink} to={`${user.id}`}>
+                    {user.name}
+                  </Link>
                 </Td>
                 <Td>{user.blogs.length}</Td>
               </Tr>

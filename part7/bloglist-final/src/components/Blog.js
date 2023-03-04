@@ -5,7 +5,7 @@ const Blog = ({ blog }) => {
   return (
     <Card>
       <Link to={`/blogs/${blog.id}`}>
-        <CardBody>
+        <CardBody padding="4">
           <HStack>
             <Text fontWeight="bold">{blog.title}</Text>
             <Text>{blog.author}</Text>
