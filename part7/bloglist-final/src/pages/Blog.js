@@ -1,3 +1,14 @@
+import {
+  Box,
+  Button,
+  Heading,
+  Input,
+  Link,
+  Stack,
+  StackDivider,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router";
@@ -95,36 +106,58 @@ const BlogPage = () => {
       {result.isError && <div>Error: {result.error.message}</div>}
       {blog && (
         <>
-          <h2>{blog.title}</h2>
-          <div>
-            <a href={url}>{blog.url}</a>
+          <Heading as="h2" size="md">
+            {blog.title}
+          </Heading>
+          <VStack alignItems="flex-start" spacing="1" marginBottom="5">
+            <Link color="blue.500" isExternal href={url}>
+              {blog.url}
+            </Link>
             <div>
               {blog.likes} likes{" "}
-              <button onClick={() => handleLike(blog)}>like</button>
+              <Button size="xs" onClick={() => handleLike(blog)}>
+                LIKE
+              </Button>
             </div>
-            {blog.user && <div>added by {blog.user.name}</div>}
-            <button onClick={() => handleDelete(blog)}>delete</button>
-          </div>
+            {blog.user && (
+              <Text fontSize="sm" color="gray.500">
+                Added by {blog.user.name}
+              </Text>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleDelete(blog)}
+            >
+              Delete
+            </Button>
+          </VStack>
           <div>
-            <h3>comments</h3>
-            <div>
+            <Heading marginBottom="1" as="h3" size="sm">
+              Comments
+            </Heading>
+            <Box marginBottom={5}>
               <form onSubmit={handleComment}>
-                <input
+                <Input
                   type="text"
                   value={commentValue}
                   onChange={({ target }) => setCommentValue(target.value)}
                 />
-                <button type="submit">add comment</button>
+                <Button marginTop="2" size="sm" type="submit">
+                  Add Comment
+                </Button>
               </form>
-            </div>
+            </Box>
             {blog.comments.length === 0 ? (
-              <div>No comments yet</div>
+              <Text>No comments yet</Text>
             ) : (
-              <ul>
+              <Stack divider={<StackDivider />}>
                 {blog.comments.map((comment) => (
-                  <li key={comment}>{comment}</li>
+                  <Text fontSize="sm" key={comment}>
+                    {comment}
+                  </Text>
                 ))}
-              </ul>
+              </Stack>
             )}
           </div>
         </>

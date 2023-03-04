@@ -1,3 +1,4 @@
+import { Heading, Table, Thead, Tr, Th, Td } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import userService from "../services/users";
@@ -8,26 +9,28 @@ const UsersPage = () => {
 
   return (
     <div>
-      <h2>Users</h2>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>blogs created</th>
-          </tr>
-        </thead>
+      <Heading as="h2" size="md">
+        Users
+      </Heading>
+      <Table>
+        <Thead>
+          <Tr>
+            <Th>Name</Th>
+            <Th>Blogs Created</Th>
+          </Tr>
+        </Thead>
         <tbody>
           {users &&
             users.map((user) => (
-              <tr key={user.id}>
-                <td>
+              <Tr key={user.id}>
+                <Td>
                   <Link to={`${user.id}`}>{user.name}</Link>
-                </td>
-                <td>{user.blogs.length}</td>
-              </tr>
+                </Td>
+                <Td>{user.blogs.length}</Td>
+              </Tr>
             ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

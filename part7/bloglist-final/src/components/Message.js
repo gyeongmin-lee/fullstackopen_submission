@@ -1,3 +1,4 @@
+import { Alert, AlertIcon, AlertTitle } from "@chakra-ui/react";
 import "./Message.css";
 
 const Message = ({ message, errorMessage }) => {
@@ -5,9 +6,10 @@ const Message = ({ message, errorMessage }) => {
     return null;
   }
   return (
-    <div className={`message ${errorMessage ? "error" : ""}`}>
-      {message || errorMessage}
-    </div>
+    <Alert status={errorMessage ? "error" : "success"}>
+      <AlertIcon />
+      <AlertTitle>{message || errorMessage}</AlertTitle>
+    </Alert>
   );
 };
 
