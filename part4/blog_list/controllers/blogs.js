@@ -7,6 +7,14 @@ blogRouter.get("/", async (request, response) => {
   response.json(blogs);
 });
 
+blogRouter.get("/:id", async (request, response) => {
+  const blog = await Blog.findById(request.params.id).populate("user", {
+    username: 1,
+    name: 1,
+  });
+  response.json(blog);
+});
+
 blogRouter.post("/", async (request, response) => {
   if (!request.body.title || !request.body.url) {
     return response.status(400).end();
@@ -30,6 +38,22 @@ blogRouter.post("/", async (request, response) => {
   await request.user.save();
 
   response.status(201).json(savedBlogs);
+});
+
+blogRouter.post("/:id/comments", async (request, response) => {
+  if (!request.body.comment) {
+    return response.status(400).end();
+  }
+
+  const blog = await Blog.findById(request.params.id);
+  if (!blog) {
+    return response.status(404).end();
+  }
+
+  blog.comments = blog.comments.concat(request.body.comment);
+  await blog.save();
+
+  response.status(201).json(blog);
 });
 
 blogRouter.delete("/:id", async (request, response) => {

@@ -1,8 +1,6 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
 
-const Blog = ({ blog, onLike, onDelete }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+const Blog = ({ blog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -13,23 +11,10 @@ const Blog = ({ blog, onLike, onDelete }) => {
 
   return (
     <div className="blog" style={blogStyle}>
-      <div>
-        <strong>{blog.title}</strong> {blog.author}{" "}
-        <button onClick={() => setIsExpanded(!isExpanded)}>
-          {!isExpanded ? "view" : "hide"}
-        </button>
-      </div>
-      {isExpanded && (
-        <div>
-          <a href={blog.url}>{blog.url}</a>
-          <div>
-            likes {blog.likes}{" "}
-            <button onClick={() => onLike(blog)}>like</button>
-          </div>
-          {blog.user && <div>{blog.user.name}</div>}
-          {onDelete && <button onClick={() => onDelete(blog)}>remove</button>}
-        </div>
-      )}
+      <strong>
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+      </strong>{" "}
+      {blog.author}{" "}
     </div>
   );
 };

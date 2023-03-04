@@ -1,13 +1,20 @@
 ### Add new blog
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdtaW5sZWUiLCJpZCI6IjYzZjQ4MTJkYzZhNjg5MTZmMzkwYmMyMiIsImlhdCI6MTY3Njk3MTgxMSwiZXhwIjoxNjc2OTc1NDExfQ.zore_D14monZp2hr9fdxFRAudQG79PeytfUTdB1oTf0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImdtaW5sZWUiLCJpZCI6IjYzZjQ4MTJkYzZhNjg5MTZmMzkwYmMyMiIsImlhdCI6MTY3NzkwMTAwMSwiZXhwIjoxNjc3OTA0NjAxfQ.J13M0nfwYqDVxuxZwkWmyLy1xgTKbrl7VcBBdGrz_RQ
 
 {
   "title": "With authentication",
   "author": "John Doe",
   "url": "google.com",
   "likes": 2
+}
+### Add new comment
+POST http://localhost:3003/api/blogs/6402ad280a8df5c37ce4164e/comments
+Content-Type: application/json
+
+{
+  "comment": "Another comment"
 }
 
 ### Get all blogs
@@ -21,8 +28,8 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-  "username": "gminlee",
-  "name": "Min Lee",
+  "username": "testuser",
+  "name": "Test User",
   "password": "adminpw"
 }
 

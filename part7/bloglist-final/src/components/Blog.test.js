@@ -1,8 +1,8 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
+import { BrowserRouter as Router } from "react-router-dom";
 
 describe("<Blog />", () => {
   const onLike = jest.fn();
@@ -16,7 +16,11 @@ describe("<Blog />", () => {
   };
 
   beforeEach(() => {
-    render(<Blog blog={blog} onLike={onLike} onDelete={onDelete} />);
+    render(
+      <Router>
+        <Blog blog={blog} onLike={onLike} onDelete={onDelete} />
+      </Router>
+    );
   });
 
   test("renders title and author, but not url or likes", () => {
@@ -28,31 +32,5 @@ describe("<Blog />", () => {
 
     expect(screen.queryByText(blog.url)).toBeNull();
     expect(screen.queryByText(`likes ${blog.likes}`)).toBeNull();
-  });
-
-  test("url and likes are shown when the button controlling the shown details has been clicked", async () => {
-    const user = userEvent.setup();
-
-    const button = screen.getByText("view");
-    await user.click(button);
-
-    const urlElem = screen.getByText(blog.url);
-    const likesElem = screen.getByText(`likes ${blog.likes}`);
-
-    expect(urlElem).toBeDefined();
-    expect(likesElem).toBeDefined();
-  });
-
-  test("if the like button is clicked twice, the event handler the component received as props is called twice", async () => {
-    const user = userEvent.setup();
-
-    const viewButton = screen.getByText("view");
-    await user.click(viewButton);
-
-    const likeButton = screen.getByText("like");
-    await user.click(likeButton);
-    await user.click(likeButton);
-
-    expect(onLike).toHaveBeenCalledTimes(2);
   });
 });
