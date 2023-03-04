@@ -102,7 +102,7 @@ const BlogPage = () => {
               {blog.likes} likes{" "}
               <button onClick={() => handleLike(blog)}>like</button>
             </div>
-            <div>added by {blog.user.name}</div>
+            {blog.user && <div>added by {blog.user.name}</div>}
             <button onClick={() => handleDelete(blog)}>delete</button>
           </div>
           <div>
