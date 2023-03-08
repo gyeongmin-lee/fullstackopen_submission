@@ -1,4 +1,4 @@
-import { ALL_AUTHORS, EDIT_AUTHOR } from "../queries";
+import { ALL_AUTHORS, ALL_BOOKS, EDIT_AUTHOR } from "../queries";
 import { useQuery, useMutation } from "@apollo/client";
 import Select from "react-select";
 import { useState } from "react";
@@ -12,7 +12,7 @@ const Authors = (props) => {
   const [born, setBorn] = useState("");
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
-    refetchQueries: [{ query: ALL_AUTHORS }],
+    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
   });
 
   const updateYear = (event) => {
