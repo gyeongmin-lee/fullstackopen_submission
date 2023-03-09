@@ -4,7 +4,8 @@ import { ALL_BOOKS, ME } from "../queries";
 const Recommended = (props) => {
   const meResult = useQuery(ME);
 
-  const favoriteGenre = meResult.data && meResult.data.me.favoriteGenre;
+  const favoriteGenre =
+    meResult.data && meResult.data.me && meResult.data.me.favoriteGenre;
 
   const result = useQuery(ALL_BOOKS, {
     variables: { genre: favoriteGenre },

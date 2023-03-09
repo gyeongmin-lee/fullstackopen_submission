@@ -29,17 +29,19 @@ const resolvers = {
       }
 
       let author = null;
-
       author = await Author.findOne({ name: args.author });
       if (!author) {
         author = new Author({ name: args.author });
-        try {
-          await author.save();
-        } catch (error) {
-          throw new GraphQLError(error.message, {
-            extensions: { code: "BAD_USER_INPUT" },
-          });
-        }
+      }
+
+      author.bookCount = author.bookCount + 1;
+
+      try {
+        await author.save();
+      } catch (error) {
+        throw new GraphQLError(error.message, {
+          extensions: { code: "BAD_USER_INPUT" },
+        });
       }
 
       const book = new Book({ ...args, author: author._id });
