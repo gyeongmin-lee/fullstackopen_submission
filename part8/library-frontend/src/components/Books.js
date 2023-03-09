@@ -1,30 +1,40 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { useState } from "react";
-import { ALL_BOOKS } from "../queries";
+import { ALL_BOOKS, BOOK_ADDED } from "../queries";
 
 const Books = (props) => {
   const [genre, setGenre] = useState(null);
 
-  const result = useQuery(ALL_BOOKS, {
-    variables: { genre },
+  const { data: bookData, refetch: refetchFilteredBooks } = useQuery(
+    ALL_BOOKS,
+    {
+      variables: { genre },
+    }
+  );
+
+  const { data: genreData, refetch: refetchAllBooks } = useQuery(ALL_BOOKS);
+
+  useSubscription(BOOK_ADDED, {
+    onData: () => {
+      refetchAllBooks();
+      refetchFilteredBooks({ genre });
+    },
   });
 
-  const allResult = useQuery(ALL_BOOKS);
-
-  const allGenres = allResult.data && [
-    ...new Set(allResult.data.allBooks.map((b) => b.genres).flat()),
+  const allGenres = genreData && [
+    ...new Set(genreData.allBooks.map((b) => b.genres).flat()),
   ];
+
+  const updateGenre = (genre) => {
+    setGenre(genre);
+    refetchFilteredBooks({ genre });
+  };
+
+  const books = bookData && bookData.allBooks;
 
   if (!props.show) {
     return null;
   }
-
-  const updateGenre = (genre) => {
-    setGenre(genre);
-    result.refetch({ genre });
-  };
-
-  const books = result.data && result.data.allBooks;
 
   return (
     <div>
