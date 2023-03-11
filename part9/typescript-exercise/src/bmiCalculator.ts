@@ -3,20 +3,31 @@ type BmiValues = {
   weight: number;
 };
 
-type Bmi = "Normal (healthy weight)" | "Underweight" | "Overweight" | "Obese";
+interface BmiResult {
+  weight: number;
+  height: number;
+  bmi: "Normal (healthy weight)" | "Underweight" | "Overweight" | "Obese";
+}
 
-const calculateBmi = (height: number, weight: number): Bmi => {
+const calculateBmi = (height: number, weight: number): BmiResult => {
   const bmi = weight / ((height / 100) * (height / 100));
 
+  let bmiResult = "";
   if (bmi < 18.5) {
-    return "Underweight";
+    bmiResult = "Underweight";
   } else if (bmi < 25) {
-    return "Normal (healthy weight)";
+    bmiResult = "Normal (healthy weight)";
   } else if (bmi < 30) {
-    return "Overweight";
+    bmiResult = "Overweight";
   } else {
-    return "Obese";
+    bmiResult = "Obese";
   }
+
+  return {
+    weight,
+    height,
+    bmi: bmiResult as BmiResult["bmi"],
+  };
 };
 
 const parseArguments = (args: string[]): BmiValues => {
@@ -44,4 +55,4 @@ try {
   console.log(errorMessage);
 }
 
-export {};
+export { calculateBmi };
