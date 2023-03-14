@@ -76,4 +76,4 @@ try {
   console.log(errorMessage);
 }
 
-export {};
+export { calculateExercises };

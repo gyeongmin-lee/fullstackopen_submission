@@ -1,1 +1,11 @@
 GET http://localhost:3003/ping
+
+###
+POST http://localhost:3003/calculate
+Content-Type: application/json
+
+{
+  "value1": 1,
+  "value2": 5,
+  "op": "add"
+}

@@ -1,6 +1,8 @@
+import bodyParser from "body-parser";
 import express from "express";
 import { calculator, Operation } from "./calculator";
 const app = express();
+app.use(bodyParser.json());
 
 app.get("/ping", (_req, res) => {
   res.send("pong");
