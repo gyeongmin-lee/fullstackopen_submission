@@ -28,7 +28,7 @@ const HospitalEntry = ({ entry }: Props) => {
         Discharge: {entry.discharge?.date} - {entry.discharge?.criteria}
       </Typography>
 
-      {entry.diagnosisCodes && (
+      {entry.diagnosis && entry.diagnosis.length > 0 && (
         <Box>
           <Typography fontWeight="bold" variant="body1">
             Diagnosis codes:

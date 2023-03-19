@@ -16,15 +16,15 @@ import AddPatientModal from "../AddPatientModal";
 
 import HealthRatingBar from "../HealthRatingBar";
 
+import { useMutation, useQueryClient } from "react-query";
 import { Link } from "react-router-dom";
 import patientService from "../../services/patients";
 
 interface Props {
   patients: Patient[];
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
 }
 
-const PatientListPage = ({ patients, setPatients }: Props) => {
+const PatientListPage = ({ patients }: Props) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<string>();
 
@@ -35,10 +35,17 @@ const PatientListPage = ({ patients, setPatients }: Props) => {
     setError(undefined);
   };
 
+  const queryClient = useQueryClient();
+
+  const { mutate: mutatePatient } = useMutation(patientService.create, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("patients");
+    },
+  });
+
   const submitNewPatient = async (values: PatientFormValues) => {
     try {
-      const patient = await patientService.create(values);
-      setPatients(patients.concat(patient));
+      mutatePatient(values);
       setModalOpen(false);
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {

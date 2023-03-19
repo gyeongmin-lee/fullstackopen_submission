@@ -37,7 +37,7 @@ const HealthCheckEntry = ({ entry }: Props) => {
 
       <FavoriteIcon htmlColor={iconColor} />
 
-      {entry.diagnosisCodes && (
+      {entry.diagnosis && entry.diagnosis.length > 0 && (
         <Box>
           <Typography fontWeight="bold" variant="body1">
             Diagnosis codes:

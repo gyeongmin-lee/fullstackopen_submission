@@ -2,3 +2,20 @@ GET http://localhost:3001/api/patients
 
 ###
 GET http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667
+
+###
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+content-type: application/json
+
+{
+  "description": "test",
+  "date": "2019-10-28",
+  "specialist": "test",
+  "diagnosisCodes": ["M24.2"],
+  "type": "OccupationalHealthcare",
+  "employerName": "BCIT",
+  "sickLeave": {
+    "startDate": "2019-10-28",
+    "endDate": "2019-10-28"
+  }
+}
