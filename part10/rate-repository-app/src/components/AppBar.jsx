@@ -1,6 +1,9 @@
+import { useQuery } from "@apollo/client";
 import Constants from "expo-constants";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Link } from "react-router-native";
+import { GET_AUTHORIZED_USER } from "../graphql/queries";
+import useSignOut from "../hooks/useSignOut";
 import theme from "../theme";
 import Text from "./Text";
 
@@ -20,15 +23,27 @@ const styles = StyleSheet.create({
 });
 
 const AppBar = () => {
+  const { data } = useQuery(GET_AUTHORIZED_USER, {
+    fetchPolicy: "cache-and-network",
+  });
+
+  const signOut = useSignOut();
+
   return (
     <View style={styles.container}>
       <ScrollView horizontal>
         <Link to="/">
           <Text style={styles.tabText}>Repositories</Text>
         </Link>
-        <Link to="/signin">
-          <Text style={styles.tabText}>Sign In</Text>
-        </Link>
+        {data?.me ? (
+          <Pressable onPress={signOut}>
+            <Text style={styles.tabText}>Sign Out</Text>
+          </Pressable>
+        ) : (
+          <Link to="/signin">
+            <Text style={styles.tabText}>Sign In</Text>
+          </Link>
+        )}
       </ScrollView>
     </View>
   );
