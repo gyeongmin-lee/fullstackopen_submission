@@ -1,9 +1,9 @@
-import { StyleSheet, View } from "react-native";
 import { useField } from "formik";
+import { StyleSheet, View } from "react-native";
 
-import TextInput from "./TextInput";
-import Text from "./Text";
 import theme from "../theme";
+import Text from "./Text";
+import TextInput from "./TextInput";
 
 const styles = StyleSheet.create({
   wrapper: {

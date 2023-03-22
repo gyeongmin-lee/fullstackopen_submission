@@ -77,6 +77,7 @@ const Repository = () => {
 
   const { data, loading } = useQuery(GET_SINGLE_REPOSITORY, {
     variables: { id: repositoryID },
+    fetchPolicy: "cache-and-network",
   });
 
   if (!data || !data.repository || loading) {
