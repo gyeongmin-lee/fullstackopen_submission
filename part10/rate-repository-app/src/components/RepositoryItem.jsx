@@ -1,7 +1,8 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import theme from "../theme";
 import { formatCount } from "../util";
 import Text from "./Text";
+import { openURL } from "expo-linking";
 
 const styles = StyleSheet.create({
   container: {
@@ -52,6 +53,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontSize: 10,
   },
+  linkWrapper: {
+    padding: 5,
+  },
+  linkBtn: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 5,
+    padding: 12,
+    display: "flex",
+    alignItems: "center",
+  },
 });
 
 const RepositoryFooterItem = ({ label, value }) => {
@@ -67,7 +78,11 @@ const RepositoryFooterItem = ({ label, value }) => {
   );
 };
 
-const RepositoryItem = ({ item }) => {
+const RepositoryItem = ({ item, showLink = false }) => {
+  const openLink = () => {
+    openURL(item.url);
+  };
+
   return (
     <View testID="repositoryItem" style={styles.container}>
       <View style={styles.flexContainer}>
@@ -96,6 +111,15 @@ const RepositoryItem = ({ item }) => {
         <RepositoryFooterItem label="Reviews" value={item.reviewCount} />
         <RepositoryFooterItem label="Rating" value={item.ratingAverage} />
       </View>
+      {showLink && (
+        <View style={styles.linkWrapper}>
+          <Pressable onPress={openLink} style={styles.linkBtn}>
+            <Text fontWeight="bold" color="white">
+              Open in GitHub
+            </Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 };
