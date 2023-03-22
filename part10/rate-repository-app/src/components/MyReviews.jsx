@@ -5,7 +5,11 @@ import ReviewItem from "./ReviewItem";
 const ItemSeparator = () => <View style={{ height: 10 }} />;
 
 const MyReviews = () => {
-  const { reviews, refetch } = useReviews();
+  const { reviews, refetch, fetchMore } = useReviews({ first: 5 });
+
+  const onEndReach = () => {
+    fetchMore();
+  };
 
   return (
     <FlatList
@@ -15,6 +19,8 @@ const MyReviews = () => {
         <ReviewItem isMine={true} review={item} refetch={refetch} />
       )}
       keyExtractor={({ id }) => id}
+      onEndReached={onEndReach}
+      // onEndReachedThreshold={0.5}
     />
   );
 };

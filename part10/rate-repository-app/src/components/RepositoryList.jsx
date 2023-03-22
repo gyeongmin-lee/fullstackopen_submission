@@ -45,6 +45,7 @@ export const RepositoryListContainer = ({
   setSortBy,
   searchValue,
   onSearchChange,
+  onEndReach,
 }) => {
   const repositoryNodes = repositories
     ? repositories.edges.map((edge) => edge.node)
@@ -55,6 +56,8 @@ export const RepositoryListContainer = ({
       data={repositoryNodes}
       ItemSeparatorComponent={ItemSeparator}
       renderItem={({ item }) => <PressableRepositoryItem item={item} />}
+      onEndReached={onEndReach}
+      onEndReachedThreshold={0.5}
       ListHeaderComponent={
         <>
           <TextInput
@@ -85,11 +88,16 @@ const RepositoryList = () => {
   const [searchValue, setSearchValue] = useState("");
   const [searchKeyword] = useDebounce(searchValue, 500);
 
-  const { repositories } = useRepositories({
+  const { repositories, fetchMore } = useRepositories({
     orderBy,
     orderDirection,
     searchKeyword,
+    first: 8,
   });
+
+  const onEndReach = () => {
+    fetchMore();
+  };
 
   return (
     <RepositoryListContainer
@@ -97,6 +105,7 @@ const RepositoryList = () => {
       setSortBy={setSortBy}
       searchValue={searchValue}
       onSearchChange={setSearchValue}
+      onEndReach={onEndReach}
     />
   );
 };

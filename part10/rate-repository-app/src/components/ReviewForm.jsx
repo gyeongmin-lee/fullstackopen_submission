@@ -55,7 +55,7 @@ export const ReviewFormContainer = ({ onSubmit }) => {
           <FormikTextInput name="text" placeholder="Review" multiline />
           <Pressable style={styles.submitBtn} onPress={handleSubmit}>
             <Text color="white" fontWeight="bold" style={styles.submitBtnText}>
-              Create a rewiew
+              Create a review
             </Text>
           </Pressable>
         </View>
