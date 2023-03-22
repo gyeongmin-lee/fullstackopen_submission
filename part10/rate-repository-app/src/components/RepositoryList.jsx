@@ -1,6 +1,10 @@
-import { FlatList, View, StyleSheet, Pressable } from "react-native";
+import { useState } from "react";
+import { FlatList, Pressable, StyleSheet, TextInput, View } from "react-native";
+
 import { useNavigate } from "react-router";
+import { useDebounce } from "use-debounce";
 import useRepositories from "../hooks/useRepositories";
+import ModalSelector from "./ModalSelector";
 import RepositoryItem from "./RepositoryItem";
 
 const styles = StyleSheet.create({
@@ -21,7 +25,27 @@ const PressableRepositoryItem = ({ item }) => {
   );
 };
 
-export const RepositoryListContainer = ({ repositories }) => {
+const sortOptions = [
+  {
+    key: "latest-repositories",
+    label: "Latest repositories",
+  },
+  {
+    key: "highest-rated-repositories",
+    label: "Highest rated repositories",
+  },
+  {
+    key: "lowest-rated-repositories",
+    label: "Lowest rated repositories",
+  },
+];
+
+export const RepositoryListContainer = ({
+  repositories,
+  setSortBy,
+  searchValue,
+  onSearchChange,
+}) => {
   const repositoryNodes = repositories
     ? repositories.edges.map((edge) => edge.node)
     : [];
@@ -31,14 +55,50 @@ export const RepositoryListContainer = ({ repositories }) => {
       data={repositoryNodes}
       ItemSeparatorComponent={ItemSeparator}
       renderItem={({ item }) => <PressableRepositoryItem item={item} />}
+      ListHeaderComponent={
+        <>
+          <TextInput
+            name="search"
+            placeholder="Search"
+            style={{ backgroundColor: "white", padding: 15 }}
+            value={searchValue}
+            onChangeText={onSearchChange}
+          />
+          <ModalSelector
+            data={sortOptions}
+            onChange={(option) => setSortBy(option.key)}
+            initValue="Sort repositories by:"
+          />
+        </>
+      }
     />
   );
 };
 
 const RepositoryList = () => {
-  const { repositories } = useRepositories();
+  const [sortBy, setSortBy] = useState("latest-repositories");
+  const orderBy =
+    sortBy === "latest-repositories" ? "CREATED_AT" : "RATING_AVERAGE";
+  const orderDirection =
+    sortBy === "lowest-rated-repositories" ? "ASC" : "DESC";
 
-  return <RepositoryListContainer repositories={repositories} />;
+  const [searchValue, setSearchValue] = useState("");
+  const [searchKeyword] = useDebounce(searchValue, 500);
+
+  const { repositories } = useRepositories({
+    orderBy,
+    orderDirection,
+    searchKeyword,
+  });
+
+  return (
+    <RepositoryListContainer
+      repositories={repositories}
+      setSortBy={setSortBy}
+      searchValue={searchValue}
+      onSearchChange={setSearchValue}
+    />
+  );
 };
 
 export default RepositoryList;
