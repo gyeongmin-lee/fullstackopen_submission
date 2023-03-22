@@ -36,14 +36,25 @@ export const GET_REPOSITORIES = gql`
 export const GET_SINGLE_REPOSITORY = gql`
   ${CORE_REPOSITORY_FIELDS}
   ${REVIEW_FIELDS}
-  query getSingleRepository($id: ID!) {
+  query getSingleRepository(
+    $id: ID!
+    $reviewsFirst: Int
+    $reviewsAfter: String
+  ) {
     repository(id: $id) {
       ...CoreRepositoryFields
-      reviews {
+      reviews(first: $reviewsFirst, after: $reviewsAfter) {
+        totalCount
         edges {
           node {
             ...ReviewFields
           }
+          cursor
+        }
+        pageInfo {
+          endCursor
+          startCursor
+          hasNextPage
         }
       }
     }
@@ -52,15 +63,11 @@ export const GET_SINGLE_REPOSITORY = gql`
 
 export const GET_AUTHORIZED_USER = gql`
   ${REVIEW_FIELDS}
-  query getAuthorizedUser(
-    $includeReviews: Boolean = false
-    $first: Int
-    $after: String
-  ) {
+  query getAuthorizedUser($includeReviews: Boolean = false) {
     me {
       id
       username
-      reviews(first: $first, after: $after) @include(if: $includeReviews) {
+      reviews @include(if: $includeReviews) {
         totalCount
         edges {
           node {
