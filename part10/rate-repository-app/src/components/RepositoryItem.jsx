@@ -69,7 +69,7 @@ const RepositoryFooterItem = ({ label, value }) => {
 
 const RepositoryItem = ({ item }) => {
   return (
-    <View style={styles.container}>
+    <View testID="repositoryItem" style={styles.container}>
       <View style={styles.flexContainer}>
         <Image source={{ uri: item.ownerAvatarUrl }} style={styles.image} />
         <View style={[styles.flexColContainer, styles.hGap]}>
