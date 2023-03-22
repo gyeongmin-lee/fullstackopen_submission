@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import Constants from "expo-constants";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { Link } from "react-router-native";
+import { Link, useNavigate } from "react-router-native";
 import { GET_AUTHORIZED_USER } from "../graphql/queries";
 import useSignOut from "../hooks/useSignOut";
 import theme from "../theme";
@@ -29,6 +29,12 @@ const AppBar = () => {
 
   const signOut = useSignOut();
 
+  const navigate = useNavigate();
+  const onSignOut = () => {
+    signOut();
+    navigate("/");
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView horizontal>
@@ -40,7 +46,10 @@ const AppBar = () => {
             <Link to="/create_review">
               <Text style={styles.tabText}>Create a review</Text>
             </Link>
-            <Pressable onPress={signOut}>
+            <Link to="/my_reviews">
+              <Text style={styles.tabText}>My reviews</Text>
+            </Link>
+            <Pressable onPress={onSignOut}>
               <Text style={styles.tabText}>Sign Out</Text>
             </Pressable>
           </>

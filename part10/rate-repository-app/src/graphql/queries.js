@@ -40,10 +40,18 @@ export const GET_SINGLE_REPOSITORY = gql`
 `;
 
 export const GET_AUTHORIZED_USER = gql`
-  query {
+  ${REVIEW_FIELDS}
+  query getAuthorizedUser($includeReviews: Boolean = false) {
     me {
       id
       username
+      reviews @include(if: $includeReviews) {
+        edges {
+          node {
+            ...ReviewFields
+          }
+        }
+      }
     }
   }
 `;
